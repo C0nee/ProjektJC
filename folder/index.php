@@ -7,25 +7,29 @@
     <title>Document</title>
 </head>
 <body>
-    <form action=""method="post" enctype="multipart/form-data">
+    <form action="" method="post" enctype="multipart/form-data">
+        <label for="uploadedFileInput">
+<input type="file" name="uploadedFile" id="uploadedFileInput"><br/>
+<input type="submit" value="Wyślij Plik" name="submit">
+</form>
+<?php
+if(isset($_POST['submit'])){
 
-    
-        <label for="uploadedFileInput"></label>
-        <input type="file"name="uploaded file" id="uploadedFileInput"><br>
-        <input type="submit" value="Wyślij Plik">
-    </form>
-        <?php
-        if(isset($POST['submit'])){
-           // echo "witaj świat";
-           // var_dump(($_FILES));
-           $sourceFileName = $_FILES['uploadedFile']['name'];
-           $tempURL = $_FILES['uploadedFile']['tmp_name'];
-           $targetDir = "img/";
-           $targetURL = $targetDir . $sourceFileName;
-           move_uploaded_file($tempURL,$targetURL);
 
-        }
+    //echo"<pre>";
+    //var_dump($_FILES);
+
+$targetDir = "img/";
+$sourceFileName =  $_FILES['uploadedFile']['name'];
+$tempURL = $_FILES['uploadedFile']['tmp_name'];
+$targetURL = $targetDir . $sourceFileName;
+move_uploaded_file($tempURL , $targetURL);
+}
+
+
+
 ?>
-    
+
+
 </body>
 </html>
