@@ -18,11 +18,14 @@ if(isset($_POST['submit'])){
 
     //echo"<pre>";
     //var_dump($_FILES);
-
+$sourceFileExtension = pathinfo($sourceFileName, PATHINFO_EXTENSION);
+$sourceFileExtension = strtolower($sourceFileExtension);
+//hasz 
+$newFileName = hash("sha256",$sourceFileName).hrtime(true) . "." . $sourceFileExtension;
+$targetURL = $targetDir . $newFileName;
 $targetDir = "img/";
 $sourceFileName =  $_FILES['uploadedFile']['name'];
 $tempURL = $_FILES['uploadedFile']['tmp_name'];
-$targetURL = $targetDir . $sourceFileName;
 
 if(file_exists($targetURL)){
     die("JEST PLIK");
