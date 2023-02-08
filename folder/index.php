@@ -13,31 +13,35 @@
 <input type="submit" value="Wyślij Plik" name="submit">
 </form>
 <?php
+
+
 if(isset($_POST['submit'])){
 
 
     //echo"<pre>";
     //var_dump($_FILES);
 
-//hasz 
 
+if(!is_array($imginfo)){
+    die("nie jest obrazek");
+//sprawdz czy mamy doczynienia z obrazem
+$imginfo = getimagesize($tempURL);
+}
 
 $targetDir = "img/";
 $sourceFileName =  $_FILES['uploadedFile']['name'];
 $tempURL = $_FILES['uploadedFile']['tmp_name'];
-$sourceFileExtension = pathinfo($sourceFileName, PATHINFO_EXTENSION);
-$sourceFileExtension = strtolower($sourceFileExtension);
-$newFileName = hash("sha256",$sourceFileName).hrtime(true) . "." . $sourceFileExtension;
+//$sourceFileExtension = pathinfo($sourceFileName, PATHINFO_EXTENSION);
+//$sourceFileExtension = strtolower($sourceFileExtension);
+$newFileName = hash("sha256",$sourceFileName).hrtime(true) . "." . "webp";
+$imageString= file_get_contents($tempURL);
+//generujemy obraz jako obiekt klasy img
+$gdImage= imagecreatefromstring($imageString);
 $targetURL = $targetDir . $newFileName;
 if(file_exists($targetURL)){
     die("JEST PLIK");
 }
-//sprawdz czy mamy doczynienia z obrazem
-$imginfo = getimagesize($tempURL);
-if(!is_array($imginfo)){
-    die("nie jest obrazek");
-}
-
+imagewebp($gdImage,$targetURL);
 
 
 
