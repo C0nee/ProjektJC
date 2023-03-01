@@ -61,9 +61,9 @@
         $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?)");
         $dbTimestamp = date("Y-m-d H:i:s");
         $query->bind_param("ss", $dbTimestamp, $hash);
-        if(!$query->execute())
+        if(!$query->execute()){
             die("Błąd zapisu do bazy danych");
-
+}
         //$query -> bind_param('ss',$dateTime,$hash);
 
 
@@ -77,8 +77,8 @@ while($data = mysqli_fetch_assoc($result)){
 <?php*/
 
 
-        $db->query($sql);
-        $db->close();
+       // $db->query($sql);
+       // $db->close();
     }
     ?>
 
