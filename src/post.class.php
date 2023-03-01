@@ -1,38 +1,74 @@
 <?php 
 class Post{
-    static function upload(string $tempFileName){
-        //Deklarujemy folder do zapisu obrazów
-        $targetDir = "/img";
-        $imginfo = @getimagesize($tempFileName);
-//jesli imginfo nie jest tablca to nie jest obrzem
-        if (!is_array($imginfo)) {
-            die("nie jest obrazek");
-            //sprawdz czy mamy doczynienia z obrazem
+    private int $id;
+    private string $fileName;
+    private string $timeStamp;
+
+    function __construct(int $i, string $f, string $t)
+    {
+        $this ->id = $i;
+        $this ->fileName = $f;
+        $this->timeStamp = $t;
+    }
+    static function getLast(): Post {
+        //odwołuje sie do bazy danych
+         global $db;
+         //przygotuj kwerende do bazy danych
+         $query = $db->prepare("SELECT * FROM post ORDER BY timeStamp DESC LIMIT 1");
+         //wykonaj kwerende
+         $query->execute();
+         //pobierz wynik
+         $result = $query->get_result();
+         //przetwarzanie - bez petni bo bedzie tylko jeden
+         $row = $result->fetch_assoc();
+         //tworzenie obiektu
+         $p = new Post($row['id'],$row['fileName'],$row['timeStamp']);
+         //zwracanie obiektu
+         return $p;
+    }
+
+    static function upload(string $tempFileName) {
+        //deklarujemy folder do którego będą zaczytywane obrazy
+        $targetDir = "img/";
+        //sprawdź czy mamy do czynienia z obrazem
+        $imgInfo = getimagesize($tempFileName);
+        //jeżeli $imgInfo nie jest tablicą to nie jest to obraz
+        if(!is_array($imgInfo)) {
+            die("BŁĄD: Przekazany plik nie jest obrazem!");
         }
-        //losowy ciag znakow z dokaldnoscia do ms
-        $randomNumber = rand(10000,99999) . hrtime(true);
+        //generujemy losową liczbę w formie
+        //5 losowych cyfr + znacznik czasu z dokładnością do ms
+        $randomNumber = rand(10000, 99999) . hrtime(true);
+        //wygeneruj hash - nową nazwę pliku
+        $hash = hash("sha256", $randomNumber);
         //tworzymy docelowy url pliku graficznego na serwerze
-          //wygeneruj hash - nową nazwę pliku
-          $hash = hash("sha256", $randomNumber);
         $newFileName = $targetDir . $hash . ".webp";
-        if (file_exists($newFileName)) {
-            die("JEST PLIK");
+        //sprawdź czy plik przypadkiem już nie istnieje
+        if(file_exists($newFileName)) {
+            die("BŁĄD: Podany plik już istnieje!");
         }
+        //zaczytujemy cały obraz z folderu tymczasowego do stringa
         $imageString = file_get_contents($tempFileName);
-        //generujemy obraz jako obiekt klasy img
+        //generujemy obraz jako obiekt klasy GDImage
+        //@ przed nazwa funkcji powoduje zignorowanie ostrzeżeń
         $gdImage = @imagecreatefromstring($imageString);
-        imagewebp($gdImage, $tempFileName);
-//uzyj globalnego połączenia
-global $db;
-$dateTime = date("Y-m-d H:i:s");
+        //zapisujemy w formacie webp
+        imagewebp($gdImage, $newFileName);
+
+        //użyj globalnego połączenia
+        global $db;
+        //stwórz kwerendę
         $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?)");
+        //przygotuj znacznik czasu dla bazy danych
         $dbTimestamp = date("Y-m-d H:i:s");
         //zapisz dane do bazy
         $query->bind_param("ss", $dbTimestamp, $newFileName);
-        if(!$query->execute()){
+        if(!$query->execute())
             die("Błąd zapisu do bazy danych");
-}
+
     }
+
+  
 }
 
 
