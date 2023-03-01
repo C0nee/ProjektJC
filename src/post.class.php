@@ -26,7 +26,20 @@ class Post{
          //zwracanie obiektu
          return $p;
     }
-
+static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
+    global $db;
+    $query = $db->prepare("SELECT * FORM post ORDER BY timeStamp DESC LIMIT ? OFFSET ?");
+    $offset = ($pageNumber-1)*$postsPerPage;
+    $query -> bind_param('ii',$postsPerPage, $offset);
+    $query->execute();
+    $result = $query->get_result();
+    $postsArray = array();
+    while($row = $result->fetch_assoc()){
+        $post = new Post($row['id'],$row['fileName'],$row['timeStamp']);
+        array_push($postsArray,$post);
+    }
+    return $postsArray;
+}
     static function upload(string $tempFileName) {
         //deklarujemy folder do którego będą zaczytywane obrazy
         $targetDir = "img/";
