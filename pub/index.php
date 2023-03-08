@@ -1,14 +1,24 @@
-<?php 
-require('./../src/config.php');
+<?php
+require_once('./../src/config.php');
 
-?>
-    <form action="" method="post" enctype="multipart/form-data">
-        <label for="uploadedFileInput">
-            <input type="file" name="uploadedFile" id="uploadedFileInput"><br />
-            <input type="submit" value="Wyślij Plik" name="submit">
-    </form>
-    <?php 
-    if (isset($_POST['submit'])) {
+use Steampixel\Route;
+
+Route::add('/', function(){
+    //zapisywanie obrazków
+    global $twig;
+    
+    $twig->display("index.html.twig");
+});
+Route::add('/upload', function(){
+    //strona do wgrywania
+    global $twig;
+    $twig->display("upload.html.twig");
+});
+Route::add('/upload',function(){
+    if(isset($_POST['submit']))  {
         Post::upload($_FILES['uploadedFile']['tmp_name']);
-    }
-    ?>
+    };
+},'post');
+$twig->display("index.html.twig");
+Route::run('/ProjektJC/pub')
+?>
