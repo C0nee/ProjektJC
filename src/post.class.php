@@ -10,6 +10,12 @@ class Post{
         $this ->fileName = $f;
         $this->timeStamp = $t;
     }
+    public function getFilename(): string{
+        return $this->fileName;
+    }
+    public function getTimeStamp() : string{
+        return $this->timeStamp;
+    }
     static function getLast(): Post {
         //odwołuje sie do bazy danych
          global $db;
@@ -28,14 +34,14 @@ class Post{
     }
 static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
     global $db;
-    $query = $db->prepare("SELECT * FORM post ORDER BY timeStamp DESC LIMIT ? OFFSET ?");
+    $query = $db->prepare("SELECT * FROM post ORDER BY TimeStamp DESC LIMIT ? OFFSET ?");
     $offset = ($pageNumber-1)*$postsPerPage;
     $query -> bind_param('ii',$postsPerPage, $offset);
     $query->execute();
     $result = $query->get_result();
     $postsArray = array();
     while($row = $result->fetch_assoc()){
-        $post = new Post($row['id'],$row['fileName'],$row['timeStamp']);
+        $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp']);
         array_push($postsArray,$post);
     }
     return $postsArray;

@@ -1,3 +1,10 @@
 {% include 'header.html.twig' %}
-<h1> strona główna </h1>
+<div id="pagecontainer">
+<h1> {{pageTitle}} </h1>
+{% for post in postArray %}<div id="post">
+<img src="{{ post.getFilename() }}"
+    <h6>Data Dodania:{{post.getTimestamp()}}</h6>
+    </div>
+{% endfor %}
+</div>
 {% include 'footer.html.twig' %} 
