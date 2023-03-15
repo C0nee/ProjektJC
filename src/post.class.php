@@ -3,12 +3,16 @@ class Post{
     private int $id;
     private string $fileName;
     private string $timeStamp;
-
-    function __construct(int $i, string $f, string $t)
+    private string $MemeTitle;
+    function __construct(int $i, string $f, string $t, string $m)
     {
         $this ->id = $i;
         $this ->fileName = $f;
         $this->timeStamp = $t;
+        $this->MemeTitle = $m;
+    }
+    public function getTitleName():string{
+        return $this->MemeTitle;
     }
     public function getFilename(): string{
         return $this->fileName;
@@ -17,6 +21,7 @@ class Post{
         return $this->timeStamp;
     }
     static function getLast(): Post {
+        
         //odwołuje sie do bazy danych
          global $db;
          //przygotuj kwerende do bazy danych
@@ -28,7 +33,7 @@ class Post{
          //przetwarzanie - bez petni bo bedzie tylko jeden
          $row = $result->fetch_assoc();
          //tworzenie obiektu
-         $p = new Post($row['id'],$row['fileName'],$row['timeStamp']);
+         $p = new Post($row['id'],$row['fileName'],$row['timeStamp'],$row['MemeTitle']);
          //zwracanie obiektu
          return $p;
     }
@@ -41,12 +46,14 @@ static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
     $result = $query->get_result();
     $postsArray = array();
     while($row = $result->fetch_assoc()){
-        $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp']);
+        $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['memeTitle']);
         array_push($postsArray,$post);
     }
     return $postsArray;
 }
     static function upload(string $tempFileName) {
+        $MemeTitle = $_POST['MemeTitle'];
+
         //deklarujemy folder do którego będą zaczytywane obrazy
         $targetDir = "img/";
         //sprawdź czy mamy do czynienia z obrazem
@@ -77,11 +84,11 @@ static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
         //użyj globalnego połączenia
         global $db;
         //stwórz kwerendę
-        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?)");
+        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?,?)");
         //przygotuj znacznik czasu dla bazy danych
         $dbTimestamp = date("Y-m-d H:i:s");
         //zapisz dane do bazy
-        $query->bind_param("ss", $dbTimestamp, $newFileName);
+        $query->bind_param("sss", $dbTimestamp, $newFileName,$MemeTitle);
         if(!$query->execute())
             die("Błąd zapisu do bazy danych");
 

@@ -4,6 +4,7 @@
 {% for post in postArray %}<div id="post">
 <img src="{{ post.getFilename() }}"
     <h6>Data Dodania:{{post.getTimestamp()}}</h6>
+    <h6>Tytul Mema:{{post.getTitleName()}}</h6>
     </div>
 {% endfor %}
 </div>
