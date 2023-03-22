@@ -1,6 +1,10 @@
 {% include 'header.html.twig' %}
 <div id="pagecontainer">
 <h1> {{pageTitle}} </h1>
+{%if user is defined%}
+{{user.getName()}}
+{%endif%}
+
 {% for post in postArray %}<div id="post">
 <img src="{{ post.getFilename() }}"
     <h6>Data Dodania:{{post.getTimestamp()}}</h6>
