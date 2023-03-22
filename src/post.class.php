@@ -1,59 +1,81 @@
-<?php 
-class Post{
+<?php
+class Post {
     private int $id;
-    private string $fileName;
-    private string $timeStamp;
-    private string $MemeTitle;
-    function __construct(int $i, string $f, string $t, string $m)
-    {
-        $this ->id = $i;
-        $this ->fileName = $f;
-        $this->timeStamp = $t;
-        $this->MemeTitle = $m;
-    }
-    public function getTitleName():string{
-        return $this->MemeTitle;
-    }
-    public function getFilename(): string{
-        return $this->fileName;
-    }
-    public function getTimeStamp() : string{
-        return $this->timeStamp;
-    }
-    static function getLast(): Post {
-        
-        //odwołuje sie do bazy danych
-         global $db;
-         //przygotuj kwerende do bazy danych
-         $query = $db->prepare("SELECT * FROM post ORDER BY timeStamp DESC LIMIT 1");
-         //wykonaj kwerende
-         $query->execute();
-         //pobierz wynik
-         $result = $query->get_result();
-         //przetwarzanie - bez petni bo bedzie tylko jeden
-         $row = $result->fetch_assoc();
-         //tworzenie obiektu
-         $p = new Post($row['id'],$row['fileName'],$row['timeStamp'],$row['MemeTitle']);
-         //zwracanie obiektu
-         return $p;
-    }
-static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
-    global $db;
-    $query = $db->prepare("SELECT * FROM post ORDER BY TimeStamp DESC LIMIT ? OFFSET ?");
-    $offset = ($pageNumber-1)*$postsPerPage;
-    $query -> bind_param('ii',$postsPerPage, $offset);
-    $query->execute();
-    $result = $query->get_result();
-    $postsArray = array();
-    while($row = $result->fetch_assoc()){
-        $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['memeTitle']);
-        array_push($postsArray,$post);
-    }
-    return $postsArray;
-}
-    static function upload(string $tempFileName) {
-        $MemeTitle = $_POST['MemeTitle'];
+    private string $filename;
+    private string $timestamp;
+    private string $title;
+    //id użytkownika który wgrał mema
+    private string $authorId;
+    //nazwa użytkownika autora mema
+    private string $authorName;
 
+    function __construct(int $i, string $f, string $t, string $title, int $authorId ) {
+        $this->id = $i;
+        $this->filename = $f;
+        $this->timestamp = $t;
+        $this->title = $title;
+        $this->authorId = $authorId;
+        //pobierz z bazy danych imię / login autora posta
+        global $db;
+        $this->authorName = User::getNameById($this->authorId);
+    }
+
+    public function getFilename() : string {
+        return $this->filename;
+    }
+    public function getTimestamp() : string {
+        return $this->timestamp;
+    }
+    public function getTitle() : string {
+        return $this->title;
+    }
+    public function getAuthorName() : string {
+        return $this->authorName;
+    }
+
+    //funkcja zwraca ostatnio dodany obrazek
+    static function getLast() : Post {
+        //odwołuję się do bazy danych
+        global $db;
+        //Przygotuj kwerendę do bazy danych
+        $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT 1");
+        //wykonaj kwerendę
+        $query->execute();
+        //pobierz wynik
+        $result = $query->get_result();
+        //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
+        $row = $result->fetch_assoc();
+        //tworzenie obiektu
+        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['title'], $row['userId']);
+        //zwracanie obiektu
+        return $p; 
+    }
+
+    //funkcja zwraca jedna stronę obrazków
+    static function getPage(int $pageNumber = 1, int $postsPerPage = 10) : array {
+        //połączenie z bazą
+        global $db;
+        //kwerenda
+        $query = $db->prepare("SELECT * FROM post ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+        //oblicz przesunięcie - numer strony * ilość zdjęć na stronie
+        $offset = ($pageNumber-1)*$postsPerPage;
+        //podstaw do kwerendy
+        $query->bind_param('ii', $postsPerPage, $offset);
+        //wywołaj kwerendę
+        $query->execute();
+        //odbierz wyniki
+        $result = $query->get_result();
+        //stwórz tablicę na obiekty
+        $postsArray = array();
+        //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
+        while($row = $result->fetch_assoc()) {
+            $post = new Post($row['id'],$row['filename'],$row['timestamp'], $row['title'], $row['userId']);
+            array_push($postsArray, $post);
+        }
+        return $postsArray;
+    }
+
+    static function upload(string $tempFileName, string $title, int $userId) {
         //deklarujemy folder do którego będą zaczytywane obrazy
         $targetDir = "img/";
         //sprawdź czy mamy do czynienia z obrazem
@@ -84,18 +106,15 @@ static function getPage(int $pageNumber = 1 ,int $postsPerPage = 10){
         //użyj globalnego połączenia
         global $db;
         //stwórz kwerendę
-        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?,?)");
+        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?, ?)");
         //przygotuj znacznik czasu dla bazy danych
         $dbTimestamp = date("Y-m-d H:i:s");
         //zapisz dane do bazy
-        $query->bind_param("sss", $dbTimestamp, $newFileName,$MemeTitle);
+        $query->bind_param("sssi", $dbTimestamp, $newFileName, $title, $userId);
         if(!$query->execute())
             die("Błąd zapisu do bazy danych");
 
     }
-
-  
 }
-
 
 ?>
