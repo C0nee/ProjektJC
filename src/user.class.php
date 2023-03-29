@@ -38,7 +38,7 @@ class User {
         return $query->execute();
     }
     //zalogowanie istniejącego użytkownika
-    public static function login(string $email, string $password) {
+    public static function login(string $email, string $password) : bool { 
         global $db;
         $query = $db->prepare("SELECT * FROM user WHERE email = ? LIMIT 1");
         $query->bind_param('s', $email);
@@ -51,8 +51,21 @@ class User {
             //hasła są zgodne - możemy zalogować użytkownika
             $u = new User($row['id'], $email);
             $_SESSION['user'] = $u;
+            return true;
+        } else {
+            return false;
         }
     }
-}
-
-?>
+        public static function isAuth() : bool {
+            //funkcja zwraca true jeśli użytkownik jest zalogowany
+            if(isset($_SESSION['user'])) {
+                if($_SESSION['user'] instanceof User) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }

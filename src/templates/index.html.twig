@@ -1,15 +1,19 @@
 {% include 'header.html.twig' %}
-<div id="pagecontainer">
-<h1> {{pageTitle}} </h1>
-{%if user is defined%}
-{{user.getName()}}
-{%endif%}
-
-{% for post in postArray %}<div id="post">
-<img src="{{ post.getFilename() }}"
-    <h6>Data Dodania:{{post.getTimestamp()}}</h6>
-    <h6>Tytul Mema:{{post.getTitleName()}}</h6>
+<div id="pageContainer">
+    <h1>{{pageTitle}}</h1>
+    {# jeśli użytkownik jest zalogowany to pokaż #}
+    {% if user is defined %}
+    <div id="loggedUser">Zalogowany użytkownik: {{ user.getName() }} </div>
+    {% endif %}
+    {% for post in postArray %}
+    <div id="post">
+        <h2>{{ post.getTytuł() }} </h2>
+        <img src="{{ post.getFilename() }}">
+        <h6>Autor: {{post.getAuthorName() }}</h6>
+        <h6>Data dodania: {{ post.getTimestamp() }} </h6>
     </div>
-{% endfor %}
+    {% endfor %}
 </div>
-{% include 'footer.html.twig' %} 
+
+
+{% include 'footer.html.twig' %}

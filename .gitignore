@@ -1,2 +1,3 @@
-vendor/
-ProjektJC/folder/img
+vendor
+pub/img/
+pub/sandbox/
