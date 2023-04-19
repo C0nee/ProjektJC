@@ -6,8 +6,9 @@ class Post {
     private string $Tytuł;
     private int $userId;
     private string $authorName;
+    private int $likeCount;
     
-    function __construct(int $i, string $f, string $t, string $Y, int $userId)
+    function __construct(int $i, string $f, string $t, string $Y, int $userId, $like)
     {
         $this->ID = $i;
         $this->FileName = $f;
@@ -16,6 +17,7 @@ class Post {
         $this->userId = $userId;
         global $db;
         $this->authorName = User::getNameById($this->userId);
+        $this->likeCount = $like;
     }
     public function getId() : int {
         return $this->ID;
@@ -32,6 +34,10 @@ class Post {
     public function getAuthorName() : string {
         return $this->authorName;
     }
+    public function getLikeCount() : int {
+        return $this->likeCount;
+    }
+
 
 
     //funkcja zwraca ostatnio dodany obrazek
@@ -47,7 +53,7 @@ class Post {
         //przetwarzanie na tablicę asocjacyjną - bez pętli bo będzie tylko jeden
         $row = $result->fetch_assoc();
         //tworzenie obiektu
-        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł'], $row['userId']);
+        $p = new Post($row['id'], $row['filename'], $row['timestamp'], $row['tytuł'], $row['userId'],$row['likes']);
         //zwracanie obiektu
         return $p; 
     }
@@ -69,7 +75,7 @@ class Post {
         $postsArray = array();
         //pobieraj wiersz po wierszu jako tablicę asocjacyjną indeksowaną nazwami kolumn z mysql
         while($row = $result->fetch_assoc()) {
-            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł'], $row['userId']);
+            $post = new Post($row['ID'],$row['FileName'],$row['TimeStamp'],$row['Tytuł'], $row['userId'],$row['likes']);
             array_push($postsArray, $post);
         }
         return $postsArray;
@@ -104,11 +110,11 @@ class Post {
         //użyj globalnego połączenia
         global $db;
         //stwórz kwerendę
-        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?,?, 0)");
+        $query = $db->prepare("INSERT INTO post VALUES(NULL, ?, ?, ?,?,0,0)");
         //przygotuj znacznik czasu dla bazy danych
         $dbTimestamp = date("Y-m-d H:i:s");
         //zapisz dane do bazy
-        $query->bind_param("sssi", $dbTimestamp, $newFileName, $Tytuł, $userId);
+        $query->bind_param("sssi", $dbTimestamp, $newFileName, $Tytuł, $userId,);
         if(!$query->execute())
             die("Błąd zapisu do bazy danych");
     }

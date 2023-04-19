@@ -13,7 +13,31 @@ Route::add('/', function() {
                         $twigData['user'] = $_SESSION['user'];
                     $twig->display("index.html.twig", $twigData);
                 });
-
+                
+                Route::add('/', function() {
+                    global $twig;   
+                    if(isset($_POST['like'])) {
+                        if(Liked::likeAdd($_POST['userID'], $_POST['postID'])) {
+                            header("Location: http://localhost/ProjektJC/pub/es");
+                        }
+                        else {
+                            header("Location: http://localhost/ProjektJC/pub");
+                        }
+                    }
+                    if(isset($_POST['dislike'])) {
+                        if(Liked::likeDelete($_POST['userID'], $_POST['postID'])) {
+                            header("Location: http://localhost/ProjektJC/pub");
+                        }
+                        else {
+                            header("Location: http://localhost/ProjektJC/pub");
+                        }
+                    }
+                
+                
+                
+                }, 'post');
+                
+                
 Route::add('/upload', function() {
     //strona z formularzem do wgrywania obrazków
     global $twig;
