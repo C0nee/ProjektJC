@@ -1,4 +1,13 @@
 {% include 'header.html.twig' %}
+<nav>
+    <ul>
+      <li><a href="http://localhost/ProjektJC/pub/">Strona Główna</a></li>
+      <li><a href="http://localhost/ProjektJC/pub/login">Logowanie</a></li>
+      <li><a href="http://localhost/ProjektJC/pub/register">Rejestracja</a></li>
+      <li><a href="http://localhost/ProjektJC/pub/admin">admin</a></li>
+      <li><a href="http://localhost/ProjektJC/pub/upload">Dodaj Mema</a></li>
+    </ul>
+  </nav>
 <div id="pageContainer">
     <h1>{{ pageTitle|default("Brak tytułu podstrony")}}</h1>
     {% if user is defined %}

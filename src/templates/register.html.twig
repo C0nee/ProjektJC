@@ -1,6 +1,18 @@
 {% include 'header.html.twig' %}
+
 <div id="pageContainer">
-    <h1>{{ pageTitle|default("Brak tytułu podstrony")}}</h1>
+    <h1>{{ pageTitle|default("Brak tytułu podstrony")}}</h1><div id="nawigacja">
+        <nav>
+            <ul>
+              <li><a href="http://localhost/ProjektJC/pub/">Strona Główna</a></li>
+              <li><a href="http://localhost/ProjektJC/pub/login">Logowanie</a></li>
+              <li><a href="http://localhost/ProjektJC/pub/register">Rejestracja</a></li>
+              <li><a href="http://localhost/ProjektJC/pub/admin">admin</a></li>
+              <li><a href="http://localhost/ProjektJC/pub/upload">Dodaj Mema</a></li>
+            </ul>
+          </nav>
+
+</div>
     <form action="" method="post">
         <label for="emailInput">Podaj adres e-mail:</label>
         <input type="email" name="email" id="emailInput"><br>

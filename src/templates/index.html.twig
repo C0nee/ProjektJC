@@ -8,6 +8,21 @@
 
 {% endif%}
 {% for post in postArray %}
+
+<div id="nawigacja">
+    <nav>
+        <ul>
+          <li><a href="http://localhost/ProjektJC/pub/">Strona Główna</a></li>
+          <li><a href="http://localhost/ProjektJC/pub/login">Logowanie</a></li>
+          <li><a href="http://localhost/ProjektJC/pub/register">Rejestracja</a></li>
+          <li><a href="http://localhost/ProjektJC/pub/admin">admin</a></li>
+          <li><a href="http://localhost/ProjektJC/pub/upload">Dodaj Mema</a></li>
+        </ul>
+      </nav>
+      
+
+    </div>
+
 <div id="post">
     <h6>Tytuł: {{post.getTytuł()}}</h6>
     <h6>Autor: {{post.getAuthorName()}}</h6>
@@ -24,9 +39,11 @@
         <input type="hidden" name="userID" value="{{ user.getID }}">
         <button type="submit" name="dislike">-</button>
     </form>
+    
 
 
 </div>
+
 {% endfor %}  
 {% include 'footer.html.twig' %}    
 </div>
